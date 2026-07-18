@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Taiyaki Cafe Network</title>
+    <style>
+        /* Base Reset & Typography */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #f7e6cc;
+            color: #3d2314;
+            font-family: 'Verdana', serif;
+            font-size: 13px;
+            line-height: 1.5;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        /* Strict Typography Overrides */
+        h1, h2, h3, p, span, label, input, button, textarea, a {
+            font-family: 'Verdana', serif !important;
+        }
+        .mono, code, pre, .captcha-question, .error-msg {
+            font-family: 'Monospace', monospace !important;
+        }
+
+        /* Registration Window */
+        .register-box {
+            background-color: #ffffff;
+            border: 4px double #3d2314;
+            padding: 30px;
+            width: 100%;
+            max-width: 450px;
+        }
+        .register-title {
+            background-color: #fcecd7;
+            border-bottom: 2px solid #3d2314;
+            font-size: 16px;
+            margin: -30px -30px 25px -30px;
+            padding: 12px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Form Layout */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        input[type="text"], input[type="password"] {
+            border: 2px solid #3d2314;
+            font-size: 12px;
+            padding: 8px;
+            width: 100%;
+            background-color: #ffffff;
+        }
+        input:focus {
+            background-color: #fcecd7;
+            outline: none;
+        }
+
+        /* --- BOT-KILLING RETRO CAPTCHA --- */
+        .captcha-container {
+            border: 2px dashed #3d2314;
+            background-color: #fcecd7;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .captcha-header {
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: block;
+            color: #b55a16;
+        }
+        /* Hidden honeypot field strictly traps scraper scripts */
+        .system-verification-field {
+            display: none !important;
+            tab-index: -1;
+            autocomplete: off;
+        }
+        .captcha-question {
+            font-size: 13px;
+            font-weight: bold;
+            background-color: #3d2314;
+            color: #ffffff;
+            padding: 6px;
+            text-align: center;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        /* Action Buttons */
+        button {
+            background-color: #e6a263;
+            border: 2px solid #3d2314;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            padding: 10px;
+            text-transform: uppercase;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #fcecd7;
+        }
+
+        /* System Messages */
+        .error-msg {
+            color: #bd1a1a;
+            font-size: 11px;
+            font-weight: bold;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 11px;
+        }
+        footer a {
+            color: #3d2314;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="register-box">
+        <div class="register-title">Establish Node Connection</div>
+        
+        <form id="registerForm" onsubmit="return verifySubmission(event)">
+            
+            <!-- Standard Inputs -->
+            <div class="form-group">
+                <label for="username">Desired Site ID:</label>
+                <input type="text" id="username" required autocomplete="off" placeholder="e.g., user-node">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Security Password:</label>
+                <input type="password" id="password" required autocomplete="off">
+            </div>
+
+            <!-- BOT TRAP 1: The Honeypot (Invisible to humans, bots auto-fill it) -->
+            <div class="system-verification-field">
+                <label for="machine_validation">Leave this completely blank:</label>
+                <input type="text" id="machine_validation" name="machine_validation">
+            </div>
+
+            <!-- BOT TRAP 2: Anti-OCR Context Question -->
+            <div class="captcha-container">
+                <span class="captcha-header">::: Integrity Verification :::</span>
+                <p style="font-size:11px; margin-bottom:8px;">Look at the prompt below and answer using digits only:</p>
+                
+                <!-- OCR scrapers struggle with mixed contextual/logical instructions -->
+                <div class="captcha-question">IF TAIYAKI = FISH, WHAT IS 5 + TWO?</div>
+                
+                <input type="text" id="captcha_answer" required placeholder="Type answer here..." autocomplete="off">
+            </div>
+
+            <button type="submit">Initialize Account</button>
+            <div id="errorBox" class="error-msg">::: VERIFICATION FAILURE: BOT DETECTED :::</div>
+        </form>
+
+        <footer>
+            <p class="mono"><a href="main.html">Return to Core Hub</a></p>
+        </footer>
+    </div>
+
+    <script>
+        function verifySubmission(event) {
+            event.preventDefault();
+            
+            const honeypot = document.getElementById('machine_validation').value;
+            const captchaInput = document.getElementById('captcha_answer').value.trim();
+            const errorBox = document.getElementById('errorBox');
+
+            // Rule 1: If the invisible honeypot field has text, a bot filled it out
+            if (honeypot !== "") {
+                errorBox.style.display = "block";
+                errorBox.innerText = "::: ERROR: TARGET MACHINE DETECTED :::";
+                return false;
+            }
+
+            // Rule 2: Evaluate the exact text-to-digit conversion result
+            if (captchaInput !== "7") {
+                errorBox.style.display = "block";
+                errorBox.innerText = "::: ERROR: INCORRECT VERIFICATION VALUE :::";
+                return false;
+            }
+
+            // Success redirect or data action
+            errorBox.style.display = "none";
+            alert("Node registration successful! Welcome to the network cafe.");
+            return true;
+        }
+    </script>
+
+</body>
+</html>

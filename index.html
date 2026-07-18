@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taiyaki Cafe: Fishie Promises!</title>
+    <style>
+        /* Base Reset & Typography */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 18px; /* Semi-thick track width */
+        }
+        /* Track Background: Linear gradient reflecting warm cafe tones */
+        ::-webkit-scrollbar-track {
+            background: linear-gradient(to right, #3d2314 0%, #5c3a21 15%, #3d2314 100%);
+            border-left: 2px solid #3d2314;
+        }
+        /* Thumb Handle: Taiyaki Gold Gradient with 8-bit SVG Fish Repeat Patch */
+        ::-webkit-scrollbar-thumb {
+            background: 
+                url('data:image/svg+xml;utf8,<svg xmlns="http://w3.org" width="16" height="16" viewBox="0 0 16 16"><path d="M2,8 C4,5 7,4 11,5 C13,4 15,6 15,8 C15,10 13,12 11,11 C7,12 4,11 2,8 Z M11,7 A1,1 0 1,0 11,9 A1,1 0 1,0 11,7 Z" fill="%233d2314"/></svg>') repeat-y center,
+                linear-gradient(to right, #fcecd7 0%, #e6a263 30%, #b55a16 100%);
+            border: 2px solid #3d2314;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: 
+                url('data:image/svg+xml;utf8,<svg xmlns="http://w3.org" width="16" height="16" viewBox="0 0 16 16"><path d="M2,8 C4,5 7,4 11,5 C13,4 15,6 15,8 C15,10 13,12 11,11 C7,12 4,11 2,8 Z M11,7 A1,1 0 1,0 11,9 A1,1 0 1,0 11,7 Z" fill="%233d2314"/></svg>') repeat-y center,
+                linear-gradient(to right, #ffffff 0%, #fcecd7 30%, #e6a263 100%);
+        }
+
+       #loader-overlay {
+            background-color: #f7e6cc;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* Simple fadeout switch handled via CSS transition rules */
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        #loader-overlay {
+    background: #f7e6cc;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    animation: loaderFade 3.8s steps(12, end) forwards;
+}
+
+@keyframes loaderFade {
+    0%, 90% {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    100% {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+}
+        .loader-box {
+            background-color: #ffffff;
+            border: 4px double #3d2314;
+            padding: 30px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        .loading-title {
+            font-size: 18px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+        /* Fish Icon Animation Bounce */
+        .loading-fish {
+            font-size: 32px;
+            margin-bottom: 15px;
+            animation: swimBounce 0.8s infinite alternate ease-in-out;
+        }
+        /* Custom Progress Bar Container */
+        .progress-bar-container {
+            border: 2px solid #3d2314;
+            background-color: #fcecd7;
+            height: 24px;
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 2px;
+            position: relative;
+        }
+        /* Pixel-Art Step Linear Fill Animation */
+        .progress-bar-fill {
+            background: linear-gradient(to right, #e6a263 0%, #b55a16 100%);
+            height: 100%;
+            width: 0%;
+            animation: fillProgress 3s steps(10) forwards;
+        }
+        .loading-status {
+            font-size: 11px;
+            display: block;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        /* Loading Screen Keyframe Animations */
+        @keyframes swimBounce {
+            0% { transform: translateY(0) scaleX(1); }
+            100% { transform: translateY(-8px) scaleX(1.1); }
+        }
+        @keyframes fillProgress {
+            0% { width: 0%; }
+            20% { width: 15%; }
+            40% { width: 45%; }
+            70% { width: 75%; }
+            90% { width: 95%; }
+            100% { width: 100%; }
+        }
+        
+        body {
+            background-color: #f7e6cc;
+            color: #3d2314;
+            font-family: 'Verdana', serif;
+            font-size: 13px;
+            line-height: 1.5;
+            padding: 20px;
+        }
+        
+        /* Strict Typography Overrides */
+        h1, h2, h3, p, span, label, input, button, textarea, a {
+            font-family: 'Verdana', serif !important;
+        }
+        .mono, code, pre, .post-meta, .tag-badge {
+            font-family: 'Monospace', monospace !important;
+        }
+
+        /* Header Layout */
+        header {
+            background-color: #e6a263;
+            border: 4px double #3d2314;
+            margin-bottom: 25px;
+            padding: 25px;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 26px;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        header p {
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .account-options a {
+          color: #3d2314;
+          font-weight: bold;
+          }
+
+        /* 4-Column Layout Grid */
+        .container {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        /* Column Elements */
+        .column {
+            background-color: #ffffff;
+            border: 2px solid #3d2314;
+            padding: 15px;
+        }
+        .column h2 {
+            background-color: #fcecd7;
+            border-bottom: 2px solid #3d2314;
+            font-size: 14px;
+            margin: -15px -15px 15px -15px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        /* Interactive Elements */
+        input[type="text"] {
+            border: 2px solid #3d2314;
+            font-size: 12px;
+            margin-bottom: 12px;
+            padding: 6px;
+            width: 100%;
+        }
+        button {
+            background-color: #e6a263;
+            border: 2px solid #3d2314;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 8px;
+            text-transform: uppercase;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #fcecd7;
+        }
+
+        /* Column 1: Add Friends */
+        .request-box {
+            border-bottom: 1px dashed #3d2314;
+            margin-top: 15px;
+            padding-bottom: 10px;
+        }
+        .request-box:last-child {
+            border: none;
+        }
+
+        /* Column 2: Friend List */
+        .friend-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .friend-card {
+            background-color: #f7e6cc;
+            border: 1px solid #3d2314;
+            padding: 8px;
+            text-align: center;
+        }
+        .friend-pic {
+            background-color: #e6a263;
+            border: 1px solid #3d2314;
+            font-family: 'Monospace', monospace !important;
+            font-size: 20px;
+            height: 45px;
+            line-height: 40px;
+            margin: 0 auto 8px auto;
+            width: 45px;
+        }
+        .friend-name {
+            display: block;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        /* Column 3: View Posts */
+        .post {
+            border: 1px solid #3d2314;
+            margin-bottom: 15px;
+            padding: 12px;
+        }
+        .post-meta {
+            border-bottom: 1px dashed #3d2314;
+            display: block;
+            font-size: 11px;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+        }
+        .post-tags {
+            display: block;
+            font-size: 11px;
+            margin-top: 8px;
+        }
+        .tag-link {
+            color: #b55a16;
+            text-decoration: underline;
+        }
+
+        /* Column 4: Create Tags */
+        .tag-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 15px;
+        }
+        .tag-badge {
+            background-color: #3d2314;
+            color: #ffffff;
+            font-size: 11px;
+            padding: 4px 8px;
+        }
+
+        /* Footer Layout */
+        footer {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        /* Responsive Flow */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 600px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+  <div id="loader-overlay">
+        <div class="loader-box">
+            <div class="loading-fish"><svg height="200px" width="200px" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#e6a263"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <style type="text/css"> .st0{fill:#e6a263;} </style> <g> <path class="st0" d="M64.175,232.851c-6.855,0-12.413,5.558-12.413,12.413c0,6.849,5.558,12.414,12.413,12.414 c6.849,0,12.402-5.564,12.402-12.414C76.577,238.409,71.024,232.851,64.175,232.851z"></path> <path class="st0" d="M508.601,257.217c-18.39-28.498-37.044-32.482-44.121-42.289c-11.952-16.545-17.67-17.505-35.846-50.558 c-10.114-18.378-16.545-58.816-34.929-68.014c-7.36-10.108-24.821-4.599-32.181,16.539c0,0-21.132,60.672-29.408,60.672 c-8.27,0-67.098-56.073-141.561-54.228c-37.48,0.922-40.438,35.845-40.438,35.845c-2.76-2.754-58.367,11.492-87.326,39.522 c-30.625,29.66-53.313,74.457-53.313,74.457c-7.347-0.922-15.629,12.862-2.754,22.977c12.862,10.114,17.456,17.468,17.456,17.468 s-11.94,8.269-11.024,16.545c0.922,8.27,7.354,17.462,19.306,11.031c3.677,5.514,22.983,22.976,29.408,23.899 c6.438,0.916,53.313-56.996,52.397-113.057c5.521-17.468,15.254-10.329,14.707,8.27c-0.916,31.252-26.653,91.919-46.876,114.902 c-1.844,20.222,73.529,46.882,83.65,48.714c0.916-1.832-9.198-25.737-0.922-34.013c2.754-4.593-26.66,0.006-34.007-3.677 c-7.36-3.677-11.031-8.27,8.27-8.27c19.306,0,27.576-7.354,27.576-7.354s-0.916-19.306,4.593-26.654 c-20.223,9.192-36.768,13.785-34.014,8.27c2.761-5.516,40.45-25.738,40.45-25.738l4.593-27.576c0,0-46.876,34.93-55.152,36.768 c-8.276,1.832,44.122-41.361,51.474-49.643c7.354-8.263,21.144-5.515,16.546,12.875c-4.599,18.384-24.649,88.919-16.546,121.333 c1.838,7.354,17.468,3.677,37.69,0.916c20.222-2.748,62.504-19.3,68.936-22.054c6.437-2.761,28.258,6.505,35.39,3.21 c17.922-8.276,37.222-41.822,44.582-57.445c21.138-37.683,81.811-21.132,122.255-43.192 C513.759,283.31,515.383,268.708,508.601,257.217z M42.109,329.368c0,0-9.647-2.754-4.138-8.276 c5.522-5.515,9.653-16.545,9.653-16.545s-19.3-20.677-22.06-24.809c-2.748-4.144-8.276-16.552,1.378-9.665 c4.051,2.896,31.713,34.474,31.713,34.474L42.109,329.368z M64.175,274.217c-12.948,0-23.438-10.489-23.438-23.444 c0-12.942,10.489-23.431,23.438-23.431c12.942,0,23.432,10.489,23.432,23.431C87.607,263.728,77.118,274.217,64.175,274.217z M188.638,166.041c-4.789-4.691-1.641-35.894,7.514-35.593C205.3,130.762,197.479,174.723,188.638,166.041z M231.867,176.321 c-3.941-5.238,2.428-35.845,10.914-34.468C251.259,143.237,239.147,185.981,231.867,176.321z M271.168,189.676 c-2.742-5.459,4.691-35.587,11.35-33.693C289.176,157.871,276.228,199.747,271.168,189.676z M312.423,382.724 c-7.71-2.374-22.429-15.15-3.024-11.129C328.803,375.604,336.046,389.997,312.423,382.724z M328.969,357.909 c-7.711-2.379-22.436-15.149-3.032-11.141C345.348,350.789,352.591,365.182,328.969,357.909z M372.979,188.926 c-5.927,4.236-15.598,2.127-7.624-7.618c7.624-9.32,26.26-32.199,30.496-33.041c4.236-0.842,12.703,4.236,5.933,13.551 C395.002,171.139,372.979,188.926,372.979,188.926z M388.246,211.884c9.161-6.678,31.56-23.106,35.618-22.866 c4.058,0.228,10.575,6.868,2.189,13.754c-8.381,6.886-32.667,17.874-32.667,17.874 C386.979,223.099,378.673,218.875,388.246,211.884z M410.084,239.687c9.395-6.345,32.372-21.95,36.424-21.575 c4.046,0.382,10.317,7.249,1.685,13.828c-8.62,6.573-33.288,16.68-33.288,16.68C408.418,250.841,400.26,246.328,410.084,239.687z M467.56,270.036c-9.604,5.029-35.612,10.87-35.612,10.87c-6.776,1.101-14.055-4.722-3.259-9.616 c10.324-4.685,35.588-16.219,39.51-15.174C472.134,257.167,477.164,264.994,467.56,270.036z"></path> </g> </g></svg></div>
+            <div class="loading-title">Fishie Promises</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill"></div>
+            </div>
+            <span class="loading-status">Baking Nodes... 100%</span>
+        </div>
+    </div>
+
+
+    <header>
+        <h1>Taiyaki Cafe: Fishie Promises!</h1>
+        <p class="mono">::: Keep your ties true and your profile swimming :::</p>
+    </header>
+    
+   <div class="account-options">
+     
+     <a href="register.html">Register</a>
+     <span> | </span>
+     <a href="create.html">Create An Account</a>
+
+    <div class="container">
+        
+        <!-- Column 1: Add Friends -->
+        <div class="column">
+            <h2>Add Friends</h2>
+            <form onsubmit="return false;">
+                <label for="friend-id" class="mono" style="display:block; margin-bottom:5px; font-size:11px;">TARGET SITE ID:</label>
+                <input type="text" id="friend-id" placeholder="Enter target site name...">
+                <button type="submit">Send Promise</button>
+            </form>
+            
+            <p class="mono" style="font-size:11px; font-weight:bold; margin-top:20px; text-transform:uppercase;">Outbound Status:</p>
+            
+            <div class="request-box">
+                <p><strong>[Project Node]</strong></p>
+                <span class="mono" style="font-size:11px;">Status: Unbroken</span>
+            </div>
+            <div class="request-box">
+                <p><strong>[Directory Link]</strong></p>
+                <span class="mono" style="font-size:11px;">Status: Pending</span>
+            </div>
+        </div>
+
+        <!-- Column 2: Friend List -->
+        <div class="column">
+            <h2>Friend List (4)</h2>
+            <div class="friend-grid">
+                <div class="friend-card">
+                    <div class="friend-pic">🐟</div>
+                    <span class="friend-name">[Site Alpha]</span>
+                </div>
+                <div class="friend-card">
+                    <div class="friend-pic">🐟</div>
+                    <span class="friend-name">[Site Beta]</span>
+                </div>
+                <div class="friend-card">
+                    <div class="friend-pic">🐟</div>
+                    <span class="friend-name">[Site Gamma]</span>
+                </div>
+                <div class="friend-card">
+                    <div class="friend-pic">🐟</div>
+                    <span class="friend-name">[Site Delta]</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 3: View Posts -->
+        <div class="column">
+            <h2>View Posts</h2>
+            
+            <div class="post">
+                <span class="post-meta">REF: #0082 // BY: [System Core]</span>
+                <p>The code repository has updated. All promises are securely anchored to your profile layout logs.</p>
+                <span class="post-tags">
+                    <span class="mono">In:</span> 
+                    <a href="#" class="tag-link">#updates</a> 
+                    <a href="#" class="tag-link">#system</a>
+                </span>
+            </div>
+
+            <div class="post">
+                <span class="post-meta">REF: #0081 // BY: [Local Admin]</span>
+                <p>I tasted taiyaki and it was delicious!</p>
+                <span class="post-tags">
+                    <span class="mono">In:</span> 
+                    <a href="#" class="tag-link">#taiyaki</a> 
+                    <a href="#" class="tag-link">#cafe</a>
+                </span>
+            </div>
+        </div>
+
+        <!-- Column 4: Create Tags -->
+        <div class="column">
+            <h2>Create Tags</h2>
+            <form onsubmit="return false;">
+                <label for="tag-input" class="mono" style="display:block; margin-bottom:5px; font-size:11px;">NEW META STRING:</label>
+                <input type="text" id="tag-input" placeholder="e.g., net-art">
+                <button type="submit">Bind Tag</button>
+            </form>
+            
+            <p class="mono" style="font-size:11px; font-weight:bold; margin-top:25px; text-transform:uppercase;">Active Tags:</p>
+            <div class="tag-group">
+                <span class="tag-badge">#updates</span>
+                <span class="tag-badge">#system</span>
+                <span class="tag-badge">#web-log</span>
+                <span class="tag-badge">#layout</span>
+                <span class="tag-badge">#network</span>
+                <span class="tag-badge">#promises</span>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p class="mono">Taiyaki Cafe Network © 2026 | Baked With Care | Secure Data Node</p>
+    </footer>
+
+</body>
+</html>

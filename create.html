@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - Taiyaki Cafe Network</title>
+    <style>
+        /* Base Reset & Typography */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #f7e6cc;
+            color: #3d2314;
+            font-family: 'Verdana', 'Courier New', monospace; /* Monospace fallback enforced */
+            font-size: 13px;
+            line-height: 1.5;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        /* Strict Typography Overrides */
+        h1, h2, h3, p, span, label, input, button, textarea, a {
+            font-family: 'Verdana', 'Courier New', monospace !important;
+        }
+        .mono, code, pre, .captcha-question, .error-msg {
+            font-family: 'Monospace', 'Courier New', monospace !important;
+        }
+
+        /* Registration Window */
+        .register-box {
+            background-color: #ffffff;
+            border: 4px double #3d2314;
+            padding: 30px;
+            width: 100%;
+            max-width: 450px;
+        }
+        .register-title {
+            background-color: #e6a263; 
+            border-bottom: 2px solid #3d2314;
+            font-size: 16px;
+            margin: -30px -30px 25px -30px;
+            padding: 12px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        /* Form Layout */
+        .form-group {
+            margin-bottom: 20px; 
+        }
+        label {
+            display: block;
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+        input[type="text"], input[type="password"], input[type="email"] {
+            border: 2px solid #3d2314;
+            font-size: 12px;
+            padding: 10px; 
+            width: 100%;
+            background-color: #ffffff;
+        }
+        input:focus {
+            background-color: #fcecd7;
+            outline: none;
+        }
+
+        /* --- BOT-KILLING RETRO CAPTCHA --- */
+        .captcha-container {
+            border: 2px dashed #3d2314;
+            background-color: #fcecd7;
+            padding: 15px;
+            margin: 25px 0;
+        }
+        .captcha-header {
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: block;
+            color: #b55a16;
+        }
+        /* Hidden honeypot field strictly traps scraper scripts */
+        .system-verification-field {
+            display: none !important;
+            tab-index: -1;
+            autocomplete: off;
+        }
+        .captcha-question {
+            font-size: 13px;
+            font-weight: bold;
+            background-color: #3d2314;
+            color: #ffffff;
+            padding: 8px;
+            text-align: center;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        /* Action Buttons */
+        button {
+            background-color: #e6a263;
+            border: 2px solid #3d2314;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            padding: 12px;
+            text-transform: uppercase;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #fcecd7;
+        }
+
+        /* System Messages */
+        .error-msg {
+            color: #bd1a1a;
+            font-size: 11px;
+            font-weight: bold;
+            margin-top: 12px;
+            text-align: center;
+            display: none;
+        }
+
+        footer {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 11px;
+        }
+        footer a {
+            color: #3d2314;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="register-box">
+        <div class="register-title">Create Account</div>
+        
+        <form id="registerForm" onsubmit="return verifySubmission(event)">
+            
+            <!-- Standard Inputs -->
+            <div class="form-group">
+                <label for="username">Desired Site ID:</label>
+                <input type="text" id="username" required autocomplete="off" placeholder="e.g., your-fishie-space">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Cafe Contact Email:</label>
+                <input type="email" id="email" required autocomplete="off" placeholder="e.g., node@network.net">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Network Security Password:</label>
+                <input type="password" id="password" required autocomplete="off">
+            </div>
+
+            <!-- BOT TRAP 1: The Honeypot -->
+            <div class="system-verification-field">
+                <label for="machine_validation">Leave this completely blank:</label>
+                <input type="text" id="machine_validation" name="machine_validation">
+            </div>
+
+            <!-- BOT TRAP 2: Anti-OCR Context Question -->
+            <div class="captcha-container">
+                <span class="captcha-header">::: Identity Verification :::</span>
+                <p style="font-size:11px; margin-bottom:8px;">Look at the prompt below and answer using digits only:</p>
+                
+                <div class="captcha-question">IF TAIYAKI = FISH, WHAT IS SIX - 2?</div>
+                
+                <input type="text" id="captcha_answer" required placeholder="Type answer here..." autocomplete="off">
+            </div>
+
+            <button type="submit">Bind Promise & Deploy</button>
+            <div id="errorBox" class="error-msg">::: VERIFICATION FAILURE: BOT DETECTED :::</div>
+        </form>
+
+        <footer>
+            <p class="mono"><a href="main.html">Return to Core Hub</a></p>
+        </footer>
+    </div>
+
+    <script>
+        function verifySubmission(event) {
+            event.preventDefault();
+            
+            const honeypot = document.getElementById('machine_validation').value;
+            const captchaInput = document.getElementById('captcha_answer').value.trim();
+            const errorBox = document.getElementById('errorBox');
+
+            if (honeypot !== "") {
+                errorBox.style.display = "block";
+                errorBox.innerText = "::: ERROR: TARGET MACHINE DETECTED :::";
+                return false;
+            }
+
+            if (captchaInput !== "4") {
+                errorBox.style.display = "block";
+                errorBox.innerText = "::: ERROR: INCORRECT VERIFICATION VALUE :::";
+                return false;
+            }
+
+            errorBox.style.display = "none";
+            alert("Taiyaki Node Registered! Welcome to the network cafe.");
+            return true;
+        }
+    </script>
+
+</body>
+</html>
